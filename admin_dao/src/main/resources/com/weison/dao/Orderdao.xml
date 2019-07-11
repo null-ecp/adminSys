@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weison.dao.Orderdao">
+
+    <resultMap id="product" type="com.weison.domain.Product">
+        <id column="p_id" property="id"></id>
+        <result property="productNum" column="p_num"></result>
+        <result property="productName" column="p_name"></result>
+        <result property="cityName" column="p_city"></result>
+        <result property="departureTime" column="p_time"></result>
+        <result property="productPrice" column="p_price"></result>
+        <result property="productDesc" column="p_desc"></result>
+        <result property="productStatus" column="p_status"></result>
+    </resultMap>
+
+    <resultMap id="travellers" type="com.weison.domain.Traveller">
+        <id column="t_id" property="id"></id>
+        <result column="t_name" property="name"></result>
+        <result column="t_sex" property="sex"></result>
+        <result column="t_phone" property="phoneNum"></result>
+        <result column="t_ctype" property="credentialsType"></result>
+        <result column="t_cnum" property="credentialsNum"></result>
+        <result column="t_ttype" property="travellerType"></result>
+    </resultMap>
+
+    <resultMap id="member" type="com.weison.domain.Member">
+        <id property="id" column="m_id"></id>
+        <result property="name" column="m_name"></result>
+        <result property="nickname" column="m_nname"></result>
+        <result property="phoneNum" column="m_num"></result>
+        <result property="email" column="m_email"></result>
+    </resultMap>
+
+    <resultMap id="order" type="com.weison.domain.Orders">
+        <id property="id" column="id"></id>
+        <result property="orderNum" column="ordernum"></result>
+        <result property="orderTime" column="ordertime"></result>
+        <result property="orderStatus" column="orderstatus"></result>
+        <result property="peopleCount" column="peoplecount"></result>
+        <result property="orderDesc" column="orderdesc"></result>
+        <result property="payType" column="paytype"></result>
+        <association property="product" resultMap="product"></association>
+        <association property="member" resultMap="member"></association>
+        <collection property="travellers" resultMap="travellers"></collection>
+    </resultMap>
+
+    <!-- 查询所有 -->
+    <select id="findall" resultMap="order">
+        select o.*, p.id p_id, p.productnum p_num, p.productname p_name, p.productprice p_price, p.cityname p_city,
+        p.departuretime p_time, p.productdesc p_desc, p.productstatus p_status
+        from orders o,product p
+        where o.productid = p.id
+    </select>
+
+    <select id="findById" resultMap="order">
+        select o.*, p.id p_id, p.productnum p_num, p.productname p_name, p.productprice p_price, p.cityname p_city,
+        p.departuretime p_time, p.productdesc p_desc, p.productstatus p_status,m.id m_id, m.name m_name,
+        m.nickname m_nname, m.phonenum m_num, m.email m_email,t.id t_id,t.name t_name,t.sex t_sex,
+        t.phonenum t_phone, t.credentialstype t_ctype,t.credentialsnum t_cnum,t.travellertype t_ttype
+        from orders o,product p,member m,traveller t,order_traveller ot
+        where o.productid = p.id and o.id = #{id} and o.id = ot.orderid and t.id = ot.travellerid
+    </select>
+</mapper>
